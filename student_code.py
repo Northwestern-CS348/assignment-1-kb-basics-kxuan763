@@ -1,9 +1,13 @@
+from typing import List, Any
+
 import read, copy
 from util import *
 from logical_classes import *
 
 
 class KnowledgeBase(object):
+    facts:List[Any]
+
     def __init__(self, facts=[], rules=[]):
         self.facts = facts
         self.rules = rules
@@ -23,8 +27,11 @@ class KnowledgeBase(object):
         Args:
             fact (Fact or Rule): Fact or Rule we're asserting in the format produced by read.py
         """
+        if isinstance(fact, Fact):
+            self.facts.append(fact)
+
         print("Asserting {!r}".format(fact))
-        
+
     def kb_ask(self, fact):
         """Ask if a fact is in the KB
 
@@ -34,4 +41,12 @@ class KnowledgeBase(object):
         Returns:
             ListOfBindings|False - ListOfBindings if result found, False otherwise
         """
+        result = ListOfBindings()
+
+        if isinstance(fact, Fact):
+            for i in self.facts:
+                if isinstance(match(fact.statement, i.statement), Bindings):
+                    result.add_bindings(match(fact.statement, i.statement))
+        return result
+
         print("Asking {!r}".format(fact))
